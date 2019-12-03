@@ -139,7 +139,7 @@ class App extends Component {
     this.spacesphere3.material.map.repeat.set(10, 8);
 
     //group.add(this.plane);
-    //group.add(this.spacesphere);
+    group.add(this.spacesphere);
     group.add(this.spacesphere2);
     //group.add(this.spacesphere3);
 
