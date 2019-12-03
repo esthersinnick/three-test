@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import * as THREE from "three";
-import bg01 from "./img/bg01.png";
+import bg01 from "./img/bg00.png";
 import bg02 from "./img/bg02.png";
 import bg03 from "./img/bg03.png";
 
@@ -60,21 +60,38 @@ class App extends Component {
     });
     this.spacesphere2 = new THREE.Mesh(spacesphereGeo2, spacesphereMat2);
 
+    //third sphere
+    const texture3 = new THREE.TextureLoader().load(bg03);
+    const spacesphereGeo3 = new THREE.SphereGeometry(14, 20, 20); //ajustar tamaño y posición de la camara para que funcione bien
+    const spacesphereMat3 = new THREE.MeshPhongMaterial({
+      map: texture3,
+      alphaTest: 0, //Antes estaba a 0.5
+      transparent: true,
+      side: THREE.DoubleSide
+    });
+    this.spacesphere3 = new THREE.Mesh(spacesphereGeo3, spacesphereMat3);
+
     //spacesphere needs to be double sided as the camera is within the spacesphere
     this.spacesphere.material.side = THREE.DoubleSide;
     this.spacesphere2.material.side = THREE.DoubleSide;
+    this.spacesphere3.material.side = THREE.DoubleSide;
 
     this.spacesphere.material.map.wrapS = THREE.RepeatWrapping;
     this.spacesphere.material.map.wrapT = THREE.RepeatWrapping;
-    this.spacesphere.material.map.repeat.set(5, 3);
+    this.spacesphere.material.map.repeat.set(5, 4);
 
     this.spacesphere2.material.map.wrapS = THREE.RepeatWrapping;
     this.spacesphere2.material.map.wrapT = THREE.RepeatWrapping;
-    this.spacesphere2.material.map.repeat.set(5, 3);
+    this.spacesphere2.material.map.repeat.set(7, 6);
+
+    this.spacesphere3.material.map.wrapS = THREE.RepeatWrapping;
+    this.spacesphere3.material.map.wrapT = THREE.RepeatWrapping;
+    this.spacesphere3.material.map.repeat.set(10, 8);
 
     var group = new THREE.Group();
     group.add(this.spacesphere);
     group.add(this.spacesphere2);
+    //group.add(this.spacesphere3);
 
     this.scene.add(group);
 
@@ -87,21 +104,26 @@ class App extends Component {
 
     lights[0] = new THREE.SpotLight(0xff704d);
     lights[0].position.set(-40, 60, -10);
-    lights[0].intensity = 2;
+    lights[0].intensity = 1.2;
 
-    lights[1] = new THREE.SpotLight(0xff6666);
+    lights[1] = new THREE.SpotLight(0x9e3364);
     lights[1].position.set(60, -10, 20);
-    lights[1].intensity = 2;
+    lights[1].intensity = 1.3;
+
+    lights[2] = new THREE.AmbientLight(0xffffff);
+    lights[2].position.set(60, -10, 20);
+    lights[2].intensity = 1;
 
     this.scene.add(lights[0]);
     this.scene.add(lights[1]);
+    this.scene.add(lights[2]);
   };
 
   startAnimationLoop = () => {
     requestAnimationFrame(this.startAnimationLoop);
-    this.spacesphere.rotation.y += 0.0004;
+    this.spacesphere.rotation.y += 0.0002;
     this.spacesphere2.rotation.y += 0.0003;
-    this.spacesphere2.rotation.y += 0.0001;
+    this.spacesphere3.rotation.y += 0.00045;
 
     this.renderer.render(this.scene, this.camera);
   };
