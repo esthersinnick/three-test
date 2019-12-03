@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import * as THREE from "three";
-import bg01 from "./img/bg00.png";
+import bg01 from "./img/bg01B.png";
+import bg04 from "./img/bg01.jpg";
 import bg02 from "./img/bg02.png";
 import bg03 from "./img/bg03.png";
+import bgPlane from "./img/bg-plane.jpg";
 
 const style = {
   height: "100vh",
@@ -43,10 +45,22 @@ class App extends Component {
   };
 
   addCustomSceneObjects = () => {
-    //Space background is a large sphere
+    //background plane
+    // const texture0 = new THREE.TextureLoader().load(bg04);
+    // const planeGeo = new THREE.PlaneGeometry(50, 25);
+    // const planeMat = new THREE.MeshPhongMaterial({ map: texture0 });
+    // this.plane = new THREE.Mesh(planeGeo, planeMat);
+    // this.plane.position.set(0, 0, 22);
+
+    // fisrt sphere
     const texture = new THREE.TextureLoader().load(bg01);
-    const spacesphereGeo = new THREE.SphereGeometry(20, 20, 20);
-    const spacesphereMat = new THREE.MeshPhongMaterial({ map: texture });
+    const spacesphereGeo = new THREE.SphereGeometry(18, 20, 20);
+    const spacesphereMat = new THREE.MeshPhongMaterial({
+      map: texture,
+      alphaTest: 0, //Antes estaba a 0.5
+      transparent: true,
+      side: THREE.DoubleSide
+    });
     this.spacesphere = new THREE.Mesh(spacesphereGeo, spacesphereMat);
 
     //second sphere
@@ -72,6 +86,7 @@ class App extends Component {
     this.spacesphere3 = new THREE.Mesh(spacesphereGeo3, spacesphereMat3);
 
     //spacesphere needs to be double sided as the camera is within the spacesphere
+    // this.plane.material.side = THREE.DoubleSide;
     this.spacesphere.material.side = THREE.DoubleSide;
     this.spacesphere2.material.side = THREE.DoubleSide;
     this.spacesphere3.material.side = THREE.DoubleSide;
@@ -89,6 +104,7 @@ class App extends Component {
     this.spacesphere3.material.map.repeat.set(10, 8);
 
     var group = new THREE.Group();
+    //group.add(this.plane);
     group.add(this.spacesphere);
     group.add(this.spacesphere2);
     //group.add(this.spacesphere3);
