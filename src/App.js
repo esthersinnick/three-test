@@ -6,6 +6,7 @@ import bg04 from "./img/bg01.jpg";
 import bg02 from "./img/bg02.png";
 import bg03 from "./img/bg03.png";
 import bgPlane from "./img/bg-plane.jpg";
+import smoke from "./img/smoke-1.png";
 
 const style = {
   height: "100vh",
@@ -39,12 +40,46 @@ class App extends Component {
       0.1, // near plane
       1000 // far plane
     );
+
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(width, height);
+
+    // ambient color
+    this.scene.fog = new THREE.FogExp2(0x741523, 0.001);
+    this.renderer.setClearColor(this.scene.fog.color);
+
     this.el.appendChild(this.renderer.domElement); // mount using React ref
   };
 
   addCustomSceneObjects = () => {
+    //nebula
+    const nebulaText = new THREE.TextureLoader().load(smoke);
+    const nebulaGeo = new THREE.PlaneBufferGeometry(500, 500);
+    const nebulaMat = new THREE.MeshLambertMaterial({
+      map: nebulaText,
+      transparent: true
+    });
+    const group = new THREE.Group();
+
+    this.nebulaParticles = [];
+
+    //loop for create 50 nebula particles
+    for (let i = 0; i < 20; i++) {
+      let nebula = new THREE.Mesh(nebulaGeo, nebulaMat);
+
+      nebula.position.set(
+        Math.random() * 500 - 250,
+        Math.random() * 300 - 100,
+        Math.random() * 200 + 300
+      );
+      nebula.rotation.z = Math.random() * 2 * Math.PI;
+      nebula.material.opacity = 0.55;
+      nebula.material.side = THREE.DoubleSide;
+
+      this.nebulaParticles.push(nebula);
+      group.add(nebula);
+    }
+    console.log(group);
     //background plane
     // const texture0 = new THREE.TextureLoader().load(bg04);
     // const planeGeo = new THREE.PlaneGeometry(50, 25);
@@ -103,9 +138,8 @@ class App extends Component {
     this.spacesphere3.material.map.wrapT = THREE.RepeatWrapping;
     this.spacesphere3.material.map.repeat.set(10, 8);
 
-    var group = new THREE.Group();
     //group.add(this.plane);
-    group.add(this.spacesphere);
+    //group.add(this.spacesphere);
     group.add(this.spacesphere2);
     //group.add(this.spacesphere3);
 
@@ -126,17 +160,34 @@ class App extends Component {
     lights[1].position.set(60, -10, 20);
     lights[1].intensity = 1.3;
 
-    lights[2] = new THREE.AmbientLight(0xffffff);
+    lights[2] = new THREE.AmbientLight(0x555555);
     lights[2].position.set(60, -10, 20);
     lights[2].intensity = 1;
 
-    this.scene.add(lights[0]);
-    this.scene.add(lights[1]);
+    lights[3] = new THREE.DirectionalLight(0xb97a84);
+    lights[3].position.set(0, 0, 1);
+    this.scene.add(lights[3]);
+
+    lights[4] = new THREE.PointLight(0xb97a84, 50, 350, 1.7);
+    lights[4].position.set(0, 0, 0);
+    this.scene.add(lights[4]);
+
+    lights[5] = new THREE.PointLight(0xb97a84, 100, 250, 3);
+    lights[5].position.set(100, 300, 100);
+    this.scene.add(lights[5]);
+
+    lights[6] = new THREE.PointLight(0xb97a84, 50, 350, 3);
+    lights[6].position.set(300, 100, 200);
+    this.scene.add(lights[6]);
+
+    //this.scene.add(lights[0]);
+    //this.scene.add(lights[1]);
     this.scene.add(lights[2]);
   };
 
   startAnimationLoop = () => {
     requestAnimationFrame(this.startAnimationLoop);
+    this.nebulaParticles.forEach(el => (el.rotation.z -= 0.001));
     this.spacesphere.rotation.y += 0.0002;
     this.spacesphere2.rotation.y += 0.0003;
     this.spacesphere3.rotation.y += 0.00045;
